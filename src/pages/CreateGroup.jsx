@@ -4,8 +4,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Identity } from "@semaphore-protocol/identity";
 import { ApiSdk } from "@bandada/api-sdk";
+import { useNavigate } from 'react-router-dom';
 
-
+import { Result } from 'postcss';
 
 const CreateGroup = () => {
 
@@ -13,57 +14,44 @@ const CreateGroup = () => {
      const [groupType, setGroupType] = useState("normal");
      const [name, setName] = useState("");
      const [description, setDescription] = useState("");
-     const [selectedCredentials, setSelectedCredentials] = useState({});
+     const navigate = useNavigate()
 
       const handleFormSubmit = async (e) => {
         e.preventDefault();
         const apiKey = "0925b7bc-ef61-436d-a587-57328b19b814";
+  const credentials = {
+    id: "TWITTER_FOLLOWERS",
+    criteria: {
+      minFollowers: 1,
+    },
+  };
 
-        const credentialsArray = Object.entries(selectedCredentials)
-          .filter(([_, criteria]) => criteria.value !== "")
-          .map(([id, criteria]) => ({
-            id,
-            criteria: {
-              [criteria.key]: criteria.value,
-              ...(criteria.network && { network: criteria.network }),
-            },
-          }));
+  const groupCreateDetails = {
+    name,
+    description,
+    treeDepth: 16,
+    fingerprintDuration: 3600,
+    credentials,
+  };
 
-        const groupCreateDetails = {
-          name,
-          description,
-          treeDepth: 16,
-          fingerprintDuration: 3600,
-          credentials:
-            groupType === "credential"
-              ? {
-                  credentials: credentialsArray,
-                  expression: Array(credentialsArray.length)
-                    .fill("")
-                    .join(" and "),
-                }
-              : undefined,
-        };
-
-        // Mock API call, replace with your actual API SDK call
-        console.log("Group creation details:", groupCreateDetails);
 
         try {
           const group = await apiSdk.createGroup(groupCreateDetails, apiKey);
           console.log("Group created:", group);
+          saveGroupToLocal(groupCreateDetails);
           alert("Group created successfully!");
+          navigate("/all")
         } catch (error) {
           console.error("Error creating group:", error);
           alert("Error creating group. Please try again.");
         }
       };
 
-       const handleCredentialChange = (id, key, value, network = null) => {
-         setSelectedCredentials((prev) => ({
-           ...prev,
-           [id]: { ...prev[id], key, value, ...(network && { network }) },
-         }));
-       };
+         const saveGroupToLocal = (group) => {
+           const savedGroups = JSON.parse(localStorage.getItem("groups")) || [];
+           savedGroups.push(group);
+           localStorage.setItem("groups", JSON.stringify(savedGroups));
+         };
 
 const apiSdk = new ApiSdk();
 function generateSemaphoreIdentity() {
@@ -77,6 +65,8 @@ function generateSemaphoreIdentity() {
     toast.info("Identity already exists.")
   }
 }
+
+
 
   return (
     <>
@@ -100,13 +90,16 @@ function generateSemaphoreIdentity() {
               </svg>
             </div>
           </div>
-          <a className="btn btn-ghost text-xl">daisyUI</a>
+          <a className="btn btn-ghost text-xl">Zk-soc</a>
         </div>
         <div className="navbar-end">
-          <button className="btn btn-primary" onClick={generateSemaphoreIdentity}>
+          <button
+            className="btn btn-primary"
+            onClick={generateSemaphoreIdentity}
+          >
             Generate Identity
           </button>
-          <ToastContainer/>
+          <ToastContainer />
         </div>
       </div>
       <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-md shadow-md">
@@ -162,13 +155,13 @@ function generateSemaphoreIdentity() {
                 <input
                   type="number"
                   placeholder="Minimum followers"
-                  onChange={(e) =>
-                    handleCredentialChange(
-                      "GITHUB_FOLLOWERS",
-                      "minFollowers",
-                      e.target.value
-                    )
-                  }
+                  //   onChange={(e) =>
+                  //     handleCredentialChange(
+                  //       "GITHUB_FOLLOWERS",
+                  //       "minFollowers",
+                  //       e.target.value
+                  //     )
+                  //   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
                 />
               </div>
@@ -181,14 +174,14 @@ function generateSemaphoreIdentity() {
                 <input
                   type="number"
                   placeholder="Minimum transactions"
-                  onChange={(e) =>
-                    handleCredentialChange(
-                      "BLOCKCHAIN_TRANSACTIONS",
-                      "minTransactions",
-                      e.target.value,
-                      "Sepolia"
-                    )
-                  }
+                  //   onChange={(e) =>
+                  //     handleCredentialChange(
+                  //       "BLOCKCHAIN_TRANSACTIONS",
+                  //       "minTransactions",
+                  //       e.target.value,
+                  //       "Sepolia"
+                  //     )
+                  //   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
                 />
               </div>
@@ -201,13 +194,13 @@ function generateSemaphoreIdentity() {
                 <input
                   type="number"
                   placeholder="Minimum followers"
-                  onChange={(e) =>
-                    handleCredentialChange(
-                      "TWITTER_FOLLOWERS",
-                      "minFollowers",
-                      e.target.value
-                    )
-                  }
+                  //   onChange={(e) =>
+                  //     handleCredentialChange(
+                  //       "TWITTER_FOLLOWERS",
+                  //       "minFollowers",
+                  //       e.target.value
+                  //     )
+                  //   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
                 />
               </div>
@@ -217,7 +210,7 @@ function generateSemaphoreIdentity() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200"
+            className="m-5 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200"
           >
             Create Group
           </button>
@@ -230,7 +223,7 @@ function generateSemaphoreIdentity() {
 export default CreateGroup
 
 
-// const github = async () => {
+       // const github = async () => {
 //   const credentials = {
 //     id: "GITHUB_FOLLOWERS",
 //     criteria: {

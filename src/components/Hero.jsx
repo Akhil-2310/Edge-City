@@ -10,11 +10,10 @@ const Hero = () => {
             className="max-w-sm rounded-lg shadow-2xl"
           />
           <div>
-            <h1 className="text-5xl font-bold">Box Office News!</h1>
-            <p className="py-6">
-              Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-              excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-              et a id nisi.
+            <h1 className="text-5xl font-bold">Next Gen Social app powered by ZK</h1>
+            <p className="py-6 text-3xl">
+            This is not just another token gating application.
+             Tired of group spam? Want to hire easily? Everything can be done here easily!
             </p>
           </div>
         </div>
